@@ -5,7 +5,7 @@ CREATE DATABASE "studentsDB"
     CONNECTION LIMIT = -1;
 
 CREATE TABLE student (
-  id BIGINT NOT NULL,
+  id SERIAL,
   name VARCHAR(255) NULL,
   surname VARCHAR(255) NULL,
   birthDate timestamp NULL,
@@ -17,14 +17,14 @@ CREATE TABLE student (
 );
 
 CREATE TABLE subject (
-  id BIGINT NOT NULL,
+  id SERIAL,
   name VARCHAR(255),
   tutor VARCHAR(255),
   CONSTRAINT pk_subject PRIMARY KEY (id)
 );
 
 CREATE TABLE exam_result (
-  id BIGINT NOT NULL,
+  id SERIAL,
   student_id BIGINT,
   subject_id BIGINT,
   mark VARCHAR(255),
