@@ -28,7 +28,7 @@ execute (
 	VALUES (''Jhon'', ''Smith'', ''2004-10-19'', ''770000000'', ''math'', ''2004-10-19'', ''2004-10-19'')',';')
     from generate_series(1,1000)
 );
-end; $$;
+end $$;
 
 --(Option 2) Fill student table
 do $$
@@ -96,3 +96,42 @@ end $$;
 DELETE FROM public.exam_result;
 
 
+--SELECT OPERATIONS WITH DIFFERENT TYPES SAMPLES--
+
+--Plain select
+SELECT * FROM public.student
+
+--Partial match by surname
+SELECT * FROM public.student WHERE surname like '%Smith';
+
+--Partial match by phone number
+SELECT * FROM public.student WHERE phone like '%770000000';
+
+
+--TRIGGER THAT UPDATES COLUMN UPDATEDAT WHEN ENTRY IS UPDATED
+
+CREATE FUNCTION upd_timestamp() RETURNS trigger AS $upd_timestamp$
+BEGIN
+        OLD.updatedat := current_timestamp;
+        RETURN NEW;
+END;
+$upd_timestamp$ LANGUAGE plpgsql;
+
+CREATE TRIGGER qupd_timestamp BEFORE UPDATE ON public.student FOR EACH ROW EXECUTE FUNCTION upd_timestamp();
+
+--TRIGGER THAT RESTRICTS PARTICULAR SYMBOLS IN 'NAME' COLUMN
+
+CREATE OR REPLACE FUNCTION check_name()
+RETURNS TRIGGER
+LANGUAGE plpgsql
+AS $check_name$
+BEGIN
+   IF NEW.name ~ '^[@,#,$]*$' THEN 
+     return new;
+   ELSE
+     RAISE EXCEPTION 'Restricted symbols in name column detected: $,@ or #';
+   END IF;
+END;
+$check_name$;
+
+CREATE TRIGGER check_name BEFORE INSERT or update on public.student FOR EACH ROW EXECUTE procedure check_name();
