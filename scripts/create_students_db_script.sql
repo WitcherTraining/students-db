@@ -27,7 +27,7 @@ CREATE TABLE exam_result (
   id SERIAL,
   student_id BIGINT,
   subject_id BIGINT,
-  mark VARCHAR(255),
+  mark BIGINT,
   CONSTRAINT pk_exam_result PRIMARY KEY (id)
 );
 

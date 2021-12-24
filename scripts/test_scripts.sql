@@ -89,7 +89,7 @@ do $$
 begin
 FOR i IN 1..1000000 LOOP
    insert into exam_result (mark)
-	VALUES ('F');
+	VALUES (85);
 END LOOP;
 end $$;
 
@@ -135,3 +135,19 @@ END;
 $check_name$;
 
 CREATE TRIGGER check_name BEFORE INSERT or update on public.student FOR EACH ROW EXECUTE procedure check_name();
+
+--CREATE AND RESTORE DUMP FOR CURRENT STATE OF DB (USE IT IN CMD)
+
+pg_dump -U postgres -h localhost studentsDB > mydb.pgsql
+pg_restore -d newstudentsDB mydb.pgsql
+
+--DIFFERENT QUERIES THAT RETURNS AVERAGE MARKS FOR STUDENT
+
+--AVERAGE MARK FOR USER
+SELECT "name", surname, AVG (mark)::NUMERIC(10,2) from exam_result INNER JOIN student ON student.id = exam_result.student_id GROUP by name, surname;
+--AVERAGE MARK FOR SUBJECT
+SELECT "name", AVG (mark)::NUMERIC(10,2) FROM exam_result INNER JOIN subject ON subject.id = exam_result.subject_id GROUP BY name;
+--RETURNS STUDENTS, WHO HAVE <= 3 MARKS ("RED ZONE")
+SELECT "name", surname FROM exam_result INNER JOIN student ON student.id = exam_result.student_id GROUP BY name, surname HAVING COUNT(mark) <= 3;
+
+
